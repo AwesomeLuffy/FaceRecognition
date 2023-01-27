@@ -26,7 +26,7 @@ known_face_encodings = list()
 cooldown_intruder_print = 10
 
 
-def captureFaces(actual_frame_number, image):
+def capture_faces(actual_frame_number, image):
     # Load Face data for the actual frame
     face_locations = face_recognition.face_locations(image)
     face_encodings = face_recognition.face_encodings(image, face_locations)
@@ -37,6 +37,10 @@ def captureFaces(actual_frame_number, image):
     # Array that contains all names
     name_array = []
     print(actual_frame_number)
+
+    if not face_encodings:
+        print("No face detected")
+        return
 
     # Check if there is any match with the known faces if there is a face
     for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
@@ -96,7 +100,7 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
     while True:
         ret, img = cap.read()
-        captureFaces(frame_number, img)
+        capture_faces(frame_number, img)
 
         frame_number += 1
         print(frame_number)
