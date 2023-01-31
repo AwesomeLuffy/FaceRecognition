@@ -3,8 +3,9 @@ import os
 import face_recognition
 from PIL import Image, ImageDraw
 import numpy as np
-
+from Utils import get_key_from_value
 from dataset import Dataset
+from Logs import Logs
 
 
 class Faces:
@@ -19,7 +20,8 @@ class Faces:
 
         for key in Dataset.known_faces.keys():
             if key.startswith("Unknown_"):
-                Faces.LAST_UNKNOWN_NUMBER = int((key.split("_")[1])[:-3])
+                Logs.info(f"Last Unknown number: {key.split('_')[1]}")
+                Faces.LAST_UNKNOWN_NUMBER = int((key.split("_")[1]))
 
     @staticmethod
     def add_face_from_image(image_path, code: str):
@@ -45,13 +47,13 @@ class Faces:
 
         for (top, right, bottom, left), face_encoding in zip(face_locations_image_to_recognize,
                                                              face_encodings_image_to_recognize):
-            # Check if there is a match (first the face we know and then the face we want to recognize)
+            # Check if there is a match (first the faces we knows and then the face we want to recognize)
             matches = face_recognition.compare_faces(list(Dataset.known_faces.values()), face_encoding)
             name = "Unknown Person"
             if True in matches:
                 # Get the name of the person
                 # Use the static method "get_key_from_value" to get the name of the person
-                name = Faces.get_key_from_value(list(Dataset.known_faces.values())[matches.index(True)])
+                name = get_key_from_value(Dataset.known_faces, list(Dataset.known_faces.values())[matches.index(True)])
                 if output:
                     Faces.output_result(pil_image, False, name)
             else:
@@ -64,13 +66,6 @@ class Faces:
 
             if output:
                 pil_image.save("default_output.jpg")
-
-    @staticmethod
-    def get_key_from_value(value):
-        for key, val in Dataset.known_faces.items():
-            if np.array_equiv(val, value):
-                return key
-        return "None"
 
     @staticmethod
     def output_result(pil_image, is_unknown: bool = False, name: str = ""):
@@ -95,6 +90,6 @@ class Faces:
 
 
 if __name__ == "__main__":
-    face = Faces("test.png")
+    face = Faces("yolan.png")
 
     face.recognize()
