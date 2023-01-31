@@ -1,14 +1,29 @@
 import pickle
-
+import os
+from Logs import Logs
 
 class Dataset:
     FILENAME = 'dataset_cegep.dat'
+    FILE_DIRECTORY = "Datasets/"
+
+    FILE_PATH = f"{FILE_DIRECTORY}{FILENAME}"
     known_faces = {}
 
+    # Method that return True if the file exist, else return False and create it
     @staticmethod
-    def load_file():
-        with open(Dataset.FILENAME, 'rb') as file:
-            Dataset.known_faces = pickle.load(file)
+    def load_file() -> bool:
+        # If file exists, just load the data
+        directory = os.scandir(Dataset.FILE_DIRECTORY)
+        for entry in directory:
+            if entry.name == Dataset.FILENAME:
+                Logs.info(f"Loading dataset file {Dataset.FILENAME}...")
+                with open(Dataset.FILE_PATH, 'rb') as file:
+                    Dataset.known_faces = pickle.load(file)
+                directory.close()
+                return True
+        # Else create the file
+        Dataset.update_file("Creating dataset file...")
+
 
     @staticmethod
     def save_face(code: str, encoding: str) -> bool:
@@ -23,8 +38,7 @@ class Dataset:
                 count += 1
                 del Dataset.known_faces[key]
 
-        with open(Dataset.FILENAME, 'wb') as file:
-            pickle.dump(Dataset.known_faces, file)
+        Dataset.update_file(f"Clear {count} unknown faces...")
 
         return count
 
@@ -32,9 +46,9 @@ class Dataset:
     def clear_face(code: str) -> bool:
         if code in Dataset.known_faces.keys():
             del Dataset.known_faces[code]
-            with open(Dataset.FILENAME, 'wb') as file:
-                pickle.dump(Dataset.known_faces, file)
+            Dataset.update_file(f"Clear face with code {code}...")
             return True
+        Logs.warning(f"Face with code {code} doesn't exist...")
         return False
 
     # Add multiple faces at once
@@ -48,7 +62,14 @@ class Dataset:
                     is_face_added = True
 
         if is_face_added:
-            with open(Dataset.FILENAME, 'wb') as file:
-                pickle.dump(Dataset.known_faces, file)
+            Dataset.update_file("Saving new faces...")
             return True
+        Logs.warning("No new face(s) to save(s), already exists...")
         return False
+
+    @staticmethod
+    def update_file(message: str = None):
+        if message is not None:
+            Logs.info(message)
+        with open(Dataset.FILE_PATH, 'wb') as file:
+            pickle.dump(Dataset.known_faces, file)
