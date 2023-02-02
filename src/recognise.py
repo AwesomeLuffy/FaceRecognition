@@ -33,7 +33,7 @@ class Faces:
         Dataset.save_face(code, encoding)
 
     def recognize(self, output: bool = True):
-        # Here we check the face and print in a new image the name of the person if there is a match, else it prints
+        # Here we check the face and print in a new image the name of the person if there is a match, else it qs
         # "Unknown Person"
 
         # Convert the actual .jpg image to a PIL image
@@ -47,7 +47,7 @@ class Faces:
 
         for (top, right, bottom, left), face_encoding in zip(face_locations_image_to_recognize,
                                                              face_encodings_image_to_recognize):
-            # Check if there is a match (first the faces we knows and then the face we want to recognize)
+            # Check if there is a match (first the faces we know and then the face we want to recognize)
             matches = face_recognition.compare_faces(list(Dataset.known_faces.values()), face_encoding)
             name = "Unknown Person"
             if True in matches:
@@ -73,7 +73,7 @@ class Faces:
             output_file_name = f"Unknown_{Faces.LAST_UNKNOWN_NUMBER:03d}.jpg"
         else:
             output_file_name = f"{name}.jpg"
-        if output_file_name not in os.scandir("OutputFaces"):
+        if output_file_name not in os.scandir("../OutputFaces"):
             pil_image.save(f"OutputFaces/{output_file_name}")
 
     @staticmethod
@@ -90,6 +90,6 @@ class Faces:
 
 
 if __name__ == "__main__":
-    face = Faces("yolan.png")
+    face = Faces("../ressources/test_image/yolan.png")
 
     face.recognize()

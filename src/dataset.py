@@ -4,7 +4,7 @@ from Logs import Logs
 
 class Dataset:
     FILENAME = 'dataset_cegep.dat'
-    FILE_DIRECTORY = "Datasets/"
+    FILE_DIRECTORY = "./Datasets/"
 
     FILE_PATH = f"{FILE_DIRECTORY}{FILENAME}"
     known_faces = {}

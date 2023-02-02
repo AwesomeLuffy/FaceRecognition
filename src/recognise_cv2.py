@@ -9,17 +9,16 @@ from dataset import Dataset
 from recognise import Faces
 from Logs import Logs
 
+
 class VideoFR:
     # Font
-    FONT = ImageFont.truetype("Arial.ttf", 10)
+    FONT = ImageFont.truetype("./ressources/fonts/Arial.ttf", 10)
     # fontScale
     font_scale = 1
     # Cooldown Intruder
     COOLDOWN_INTRUDER = 10
     # Cooldown for the time between two frames
     COOLDOWN_FRAME = 25
-    # Stored the last Unknown number
-    LAST_UNKNOWN_NUMBER = 0
     # Output picture extension
     EXTENSION = ".jpg"
 
@@ -38,10 +37,12 @@ class VideoFR:
 
         self.encoded_faces = []
 
+        self.LAST_UNKNOWN_NUMBER = 0
+
         for key in Dataset.known_faces.keys():
             if key.startswith("Unknown_"):
                 Logs.info(f"Last Unknown number: {key.split('_')[1]}")
-                Faces.LAST_UNKNOWN_NUMBER = int((key.split("_")[1])[:-len(VideoFR.EXTENSION)])
+                self.LAST_UNKNOWN_NUMBER = int((key.split("_")[1])[:-len(VideoFR.EXTENSION)]) + 1
 
     def capture_faces(self, image: list) -> bool:
 
@@ -70,9 +71,9 @@ class VideoFR:
                 name = get_key_from_value(Dataset.known_faces, self.encoded_faces[matches.index(True)])
             else:
                 self.LAST_UNKNOWN_NUMBER += 1
-                if Dataset.save_face(f"Unknown_{VideoFR.LAST_UNKNOWN_NUMBER:03d}", face_encoding):
+                if Dataset.save_face(f"Unknown_{self.LAST_UNKNOWN_NUMBER:03d}", face_encoding):
                     self.encoded_faces.append(face_encoding)
-                    name = f"Unknown_{VideoFR.LAST_UNKNOWN_NUMBER:03d}"
+                    name = f"Unknown_{self.LAST_UNKNOWN_NUMBER:03d}"
 
             # Draw the rectangle around the face
             draw.rectangle(((left + 2, top + 2), (right + 2, bottom + 2)), outline=(255, 255, 0))
@@ -126,7 +127,7 @@ if __name__ == "__main__":
         # Set the img in a list
         images = [img]
 
-        # Here we use the list just assigned to pass by reference the image and not to return it
+        # Here we use the list just assigned to pass by reference the image and not have to return it
         if videofr_instance.capture_faces(images):
             cv2.imshow("Face Recognition", images[0])
 
