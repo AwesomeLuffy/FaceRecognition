@@ -1,15 +1,18 @@
 import pickle
 import os
 from Logs import Logs
+from database_handler import DatabaseHandler
+import numpy as np
 
 class Dataset:
     FILENAME = 'dataset_cegep.dat'
-    FILE_DIRECTORY = "./Datasets/"
+    FILE_DIRECTORY = "../Datasets/"
 
     FILE_PATH = f"{FILE_DIRECTORY}{FILENAME}"
     known_faces = {}
 
     # Method that return True if the file exist, else return False and create it
+
     @staticmethod
     def load_file() -> bool:
         # If file exists, just load the data
@@ -23,7 +26,17 @@ class Dataset:
                 return True
         # Else create the file
         Dataset.update_file("Creating dataset file...")
+        return False
 
+    # Load data from the database
+    @staticmethod
+    def load_from_database() -> bool:
+        values = DatabaseHandler.read_values("SELECT da, encoded FROM faces")
+        if values is not None:
+            for da, encoded in values:
+                Dataset.known_faces[str(da)] = np.frombuffer(encoded)
+            return True
+        return False
 
     @staticmethod
     def save_face(code: str, encoding: str) -> bool:
