@@ -87,7 +87,7 @@ class Server:
 
     @staticmethod
     def decode_and_execute(data: str) -> str:
-        from main import Main
+        from src.main import Main
 
         token = JWToken.token_from_string(data)
         if token is None:
@@ -101,16 +101,16 @@ class Server:
             if Server.IS_CAMERA_ON:
                 with Main.THREAD_LOCK:
                     Server.IS_CAMERA_ON = False
-                    Logs.warning("Camera stopped...")
-                return Server.format_text(Results.SUCCESS, "Camera already Stopped")
-            return Server.format_text(Results.SUCCESS, "Camera Stopped")
+                    Logs.warning("Camera stopped by Flask Server...")
+                return Server.format_text(Results.SUCCESS, "Camera Stopped")
+            return Server.format_text(Results.SUCCESS, "Camera already Stopped")
         elif action == Actions.START_CAMERA.value:
             if not Server.IS_CAMERA_ON:
                 with Main.THREAD_LOCK:
                     Server.IS_CAMERA_ON = True
-                    Logs.warning("Camera started...")
-                return Server.format_text(Results.SUCCESS, "Camera already Started")
-            return Server.format_text(Results.SUCCESS, "Camera Started")
+                    Logs.warning("Camera started by Flask Server...")
+                return Server.format_text(Results.SUCCESS, "Camera Started")
+            return Server.format_text(Results.SUCCESS, "Camera already Started")
         else:
             return "Invalid Action..."
 
