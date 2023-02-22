@@ -1,7 +1,6 @@
 from enum import Enum
 import datetime
 import inspect
-import os
 
 
 # Color class to print colored text in the console

@@ -1,19 +1,27 @@
 import pickle
 import os
-import threading
 
-from Logs import Logs
-from database_handler import DatabaseHandler
+from src.Utils.Logs import Logs
+from src.Database.database_handler import DatabaseHandler
 import numpy as np
 from threading import Lock
 import face_recognition
-from Utils import get_key_from_value
 from deprecated import deprecated
+from src.Utils.Person import Unknown
+import sys
 
 
 class Dataset:
+    MYSQL_FACE_TABLE = "face"
+    MYSQL_FACE_DA_COLUMN = "da"
+    MYSQL_FACE_ENCODED_COLUMN = "encoded"
+
+    MYSQL_UNKNOWN_TABLE = "unknowns"
+    MYSQL_UNKNOWN_NAME_COLUMN = "name"
+    MYSQL_UNKNOWN_IMAGE_COLUMN = "image"
+
     FILENAME = 'dataset_cegep.dat'
-    FILE_DIRECTORY = "../Datasets/"
+    FILE_DIRECTORY = "../../Datasets/"
 
     FILE_PATH = f"{FILE_DIRECTORY}{FILENAME}"
     # known_faces is actually not "duplicate" safety, i mean i manually check and prevent duplicates, but it's not
@@ -21,6 +29,9 @@ class Dataset:
     # face to the dataset
     known_faces = {}
     known_faces_encoded = []
+
+    # Represent the max size for a image, actually it's 120Kio
+    MAX_BUFFER_SIZE_BYTES_IMAGE = 120_000
 
     # Method that return True if the file exist, else return False and create it
     @staticmethod
@@ -50,7 +61,8 @@ class Dataset:
         with Lock():
             Logs.info("Lock acquired...")
             # Get the data from the database
-            values = DatabaseHandler.read_values("SELECT da, encoded FROM face")
+            values = DatabaseHandler.read_values(
+                f"SELECT {Dataset.MYSQL_FACE_DA_COLUMN}, {Dataset.MYSQL_FACE_ENCODED_COLUMN} FROM {Dataset.MYSQL_FACE_TABLE}")
             if values is not None:
                 # Clear the known faces to prevent duplicates
                 for da in list(Dataset.known_faces.keys()):
@@ -71,7 +83,6 @@ class Dataset:
                             # If the unknown face is already in the database, delete it
                             if True in match:
                                 del Dataset.known_faces[key]
-                                print(Dataset.known_faces)
                                 break
                 # Update the encoded list
                 Dataset.known_faces_encoded = list(Dataset.known_faces.values())
@@ -89,7 +100,6 @@ class Dataset:
         :return: True if the face is saved, else False
         """
         return Dataset.add_faces({code: encoding})
-
 
     @staticmethod
     def clear_unknown() -> int:
@@ -134,4 +144,18 @@ class Dataset:
                 Logs.info(f"Face with code {code} added...")
                 return True
         Logs.warning("No new face(s) to save(s), already exists...")
+        return False
+
+    @staticmethod
+    def insert_unknown(ukn: Unknown) -> bool:
+        """
+        Insert an unknown face in the database
+        :param ukn: The unknown face
+        :return:
+        """
+        if sys.getsizeof(ukn.image_encoded) < Dataset.MAX_BUFFER_SIZE_BYTES_IMAGE:
+            # Insert the unknown face in the database
+            return DatabaseHandler.insert_query(
+                f"INSERT INTO {Dataset.MYSQL_UNKNOWN_TABLE} ({Dataset.MYSQL_UNKNOWN_NAME_COLUMN}, {Dataset.MYSQL_UNKNOWN_IMAGE_COLUMN}) VALUES (%s, %s)",
+                (ukn.code, ukn.image_encoded)) > 0
         return False

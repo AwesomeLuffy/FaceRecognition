@@ -1,14 +1,16 @@
 import threading
 import time
-from threading import Lock
-from dataset import Dataset
+from src.Utils.DataHandler import Dataset
 from recognise_cv2 import VideoFR
-from server import Server
+from src.Utils.server import Server
 import cv2
 
 
 class Main:
-    # Will be accessed by the thread to disable the camera
+    """ Main class
+    Will start the necessary threads
+    """
+    # Lock to avoid multiple threads to access the same resource
     THREAD_LOCK = threading.Lock()
 
     @staticmethod
@@ -29,7 +31,7 @@ class Main:
 
     @staticmethod
     def run():
-        """ Start the video capture
+        """ Run the video capture
         """
         videofr_instance = VideoFR()
 

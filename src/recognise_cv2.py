@@ -1,16 +1,12 @@
-import time
-
 import face_recognition
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-import pickle
 
-from Utils import get_key_from_value
-from dataset import Dataset
-from recognise import Faces
-from Logs import Logs
-import threading
+from src.Utils.Utils import get_key_from_value
+from src.Utils.DataHandler import Dataset
+from src.Utils.Logs import Logs
+from src.Utils.Person import Unknown
 
 
 class VideoFR:
@@ -96,6 +92,7 @@ class VideoFR:
                 # I increment the number of the last unknown person
                 self.LAST_UNKNOWN_NUMBER += 1
                 if Dataset.save_face(f"Unknown_{self.LAST_UNKNOWN_NUMBER:03d}", face_encoding):
+                    Dataset.insert_unknown(Unknown(f"Unknown_{self.LAST_UNKNOWN_NUMBER:03d}", face_encoding, image[0]))
                     name = f"Unknown_{self.LAST_UNKNOWN_NUMBER:03d}"
 
             if self.debug_mode:
@@ -139,6 +136,3 @@ class VideoFR:
         self.left_face_array.clear()
         self.bottom_face_array.clear()
         self.text_height_array.clear()
-
-
-

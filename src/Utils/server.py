@@ -1,10 +1,10 @@
 import socket
 from _thread import *
 import threading
-from Logs import Logs
-from JWToken import JWToken
+from src.Utils.Logs import Logs
+from src.Utils.JWToken import JWToken
 from enum import Enum
-from dataset import Dataset
+from src.Utils.DataHandler import Dataset
 
 
 class Results(Enum):
@@ -14,6 +14,10 @@ class Results(Enum):
 
 
 class Actions(Enum):
+    """ To add an Action to the server, just add it here and in the client
+    The code is in decode_and_execute() method, just add a new elif
+    The system is implemented for a very basic use case, so it's not very scalable
+    """
     ACTUALIZE_FACE = "actualize_face"
     STOP_CAMERA = "stop_camera"
     START_CAMERA = "start_camera"
@@ -23,7 +27,9 @@ class Server:
     # We have to set shared value here to let Server be the autority source of the value
     IS_CAMERA_ON = True
 
-    def __init__(self, host='', port=45634):
+    HOST_PORT = 45634
+
+    def __init__(self, host='', port=HOST_PORT):
         """
         Constructor of the server
         :param host:

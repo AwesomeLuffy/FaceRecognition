@@ -1,15 +1,10 @@
 import os
-import pickle
 
 import face_recognition
-import numpy
 from PIL import Image, ImageDraw
-import numpy as np
-from Utils import get_key_from_value
-from dataset import Dataset
-from Logs import Logs
-
-import database_handler
+from src.Utils.Utils import get_key_from_value
+from src.Utils.DataHandler import Dataset
+from src.Utils.Logs import Logs
 
 
 class Faces:
@@ -79,7 +74,7 @@ class Faces:
             output_file_name = f"Unknown_{Faces.LAST_UNKNOWN_NUMBER:03d}.jpg"
         else:
             output_file_name = f"{name}.jpg"
-        if output_file_name not in os.scandir("../OutputFaces"):
+        if output_file_name not in os.scandir("../../OutputFaces"):
             pil_image.save(f"../OutputFaces/{output_file_name}")
 
     @staticmethod
@@ -96,28 +91,13 @@ class Faces:
 
 
 if __name__ == "__main__":
-    # Dataset.clear_unknown()
-    # Faces.add_face_from_image("../Screenshot_3.png", "Yolan")
-    # narray = Faces.encode_face_from_image("../Screenshot_3.png")
-    # dumped = bytes(memoryview(narray))
-    # # print(type(dumped))
-    # sql = "INSERT INTO faces (da, nom, prenom, encoded, image_location, acces) VALUES (%s, %s, %s, %s, %s, %s);"
-    # #
-    # tup = (202030141, "RENARD", "Yolan", dumped, "../Screenshot_3.png", True)
-    #
-    # print(database_handler.DatabaseHandler.insert_query(sql, tup))
-    #conn.commit()
-
-    # cur.execute("SELECT * FROM faces")
-    # res = cur.fetchall()
-    # #
-    # idd, da, name, surname, encoded, loc, access, datee = res[0]
-    # #
-    # test = numpy.frombuffer(encoded)
-    #
-    # print(numpy.array_equiv(narray, test))
-
-    #print(database_handler.DatabaseHandler.check_value_exists("faces", "da", (202030141,)))
+    """
+    Add a face to the dataset
+    
+    This code is to test a picture and add it to the dataset
+    
+    Will surely be removed in the future
+    """
     Faces("../OutputFaces/.jpg").recognize()
 
 
