@@ -3,10 +3,10 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from src.Utils.Utils import get_key_from_value
-from src.Utils.DataHandler import Dataset
-from src.Utils.Logs import Logs
-from src.Utils.Person import Unknown
+from Utils.Utils import get_key_from_value
+from Utils.DataHandler import Dataset
+from Utils.Logs import Logs
+from Utils.Person import Unknown
 
 
 class VideoFR:
@@ -24,8 +24,9 @@ class VideoFR:
     # Output picture extension
     EXTENSION = ".jpg"
 
-    def __init__(self, debug_mode: bool = False):
-        self.debug_mode = debug_mode
+    DEBUG_MODE = False
+
+    def __init__(self):
         # Face array data
         self.left_face_array = []
         self.right_face_array = []
@@ -95,7 +96,7 @@ class VideoFR:
                     Dataset.insert_unknown(Unknown(f"Unknown_{self.LAST_UNKNOWN_NUMBER:03d}", face_encoding, image[0]))
                     name = f"Unknown_{self.LAST_UNKNOWN_NUMBER:03d}"
 
-            if self.debug_mode:
+            if VideoFR.DEBUG_MODE:
                 # Convert the image to PIL format (This code will be removed cause we don't need to draw on the image)
                 pil_image = Image.fromarray(image[0])
                 draw = ImageDraw.Draw(pil_image)

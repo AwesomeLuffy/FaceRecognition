@@ -2,9 +2,9 @@ import os
 
 import face_recognition
 from PIL import Image, ImageDraw
-from src.Utils.Utils import get_key_from_value
-from src.Utils.DataHandler import Dataset
-from src.Utils.Logs import Logs
+from Utils import get_key_from_value
+from DataHandler import Dataset
+from Logs import Logs
 
 
 class Faces:
