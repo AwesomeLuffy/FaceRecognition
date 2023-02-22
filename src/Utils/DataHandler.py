@@ -102,7 +102,7 @@ class Dataset:
         return Dataset.add_faces({code: encoding})
 
     @staticmethod
-    def clear_unknown() -> int:
+    def clear_unknown(on_database: bool = False) -> int:
         """
         Clear all the unknown faces
         :return:
@@ -112,7 +112,9 @@ class Dataset:
             if key.startswith("Unknown_"):
                 count += 1
                 del Dataset.known_faces[key]
-
+        if on_database:
+            DatabaseHandler.delete_values(f"DELETE FROM {Dataset.MYSQL_UNKNOWN_TABLE}")
+            Logs.warning("Unknown faces cleared from the database...")
         return count
 
     @staticmethod
