@@ -13,6 +13,8 @@ class Main:
     # Lock to avoid multiple threads to access the same resource
     THREAD_LOCK = threading.Lock()
 
+    CLEAR_UNKNOWNS_ON_LOAD = True
+
     @staticmethod
     def start():
         """ Start the video capture and the server in two different threads
@@ -34,6 +36,9 @@ class Main:
         """ Run the video capture
         """
         videofr_instance = VideoFR()
+
+        if Main.CLEAR_UNKNOWNS_ON_LOAD:
+            Dataset.clear_unknown(True)
 
         Dataset.load_from_database()
 
