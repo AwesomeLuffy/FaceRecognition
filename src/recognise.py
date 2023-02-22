@@ -1,18 +1,23 @@
 import os
+import pickle
 
 import face_recognition
+import numpy
 from PIL import Image, ImageDraw
 import numpy as np
 from Utils import get_key_from_value
 from dataset import Dataset
 from Logs import Logs
 
+import database_handler
+
 
 class Faces:
     LAST_UNKNOWN_NUMBER = 0
 
     def __init__(self, image_path):
-        Dataset.load_file()
+        # Dataset.load_file()
+        Dataset.load_from_database()
 
         self.draw = None
         # Convert the image to ndarray
@@ -66,6 +71,7 @@ class Faces:
 
             if output:
                 pil_image.save("default_output.jpg")
+            print(name)
 
     @staticmethod
     def output_result(pil_image, is_unknown: bool = False, name: str = ""):
@@ -74,7 +80,7 @@ class Faces:
         else:
             output_file_name = f"{name}.jpg"
         if output_file_name not in os.scandir("../OutputFaces"):
-            pil_image.save(f"OutputFaces/{output_file_name}")
+            pil_image.save(f"../OutputFaces/{output_file_name}")
 
     @staticmethod
     def encode_face_from_image(image_path):
@@ -90,6 +96,29 @@ class Faces:
 
 
 if __name__ == "__main__":
-    face = Faces("../ressources/test_image/yolan.png")
+    # Dataset.clear_unknown()
+    # Faces.add_face_from_image("../Screenshot_3.png", "Yolan")
+    # narray = Faces.encode_face_from_image("../Screenshot_3.png")
+    # dumped = bytes(memoryview(narray))
+    # # print(type(dumped))
+    # sql = "INSERT INTO faces (da, nom, prenom, encoded, image_location, acces) VALUES (%s, %s, %s, %s, %s, %s);"
+    # #
+    # tup = (202030141, "RENARD", "Yolan", dumped, "../Screenshot_3.png", True)
+    #
+    # print(database_handler.DatabaseHandler.insert_query(sql, tup))
+    #conn.commit()
 
-    face.recognize()
+    # cur.execute("SELECT * FROM faces")
+    # res = cur.fetchall()
+    # #
+    # idd, da, name, surname, encoded, loc, access, datee = res[0]
+    # #
+    # test = numpy.frombuffer(encoded)
+    #
+    # print(numpy.array_equiv(narray, test))
+
+    #print(database_handler.DatabaseHandler.check_value_exists("faces", "da", (202030141,)))
+    Faces("../OutputFaces/.jpg").recognize()
+
+
+
