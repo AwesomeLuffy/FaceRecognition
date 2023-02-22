@@ -29,6 +29,8 @@ class Server:
 
     HOST_PORT = 45634
 
+    TOKEN_SECRET = "secret"
+
     def __init__(self, host='', port=HOST_PORT):
         """
         Constructor of the server
@@ -92,6 +94,9 @@ class Server:
         token = JWToken.token_from_string(data)
         if token is None:
             return ""
+        if not token.check_token_signature(Server.TOKEN_SECRET):
+            return ""
+
         action = token.read_payload()["action"]
 
         if action == Actions.ACTUALIZE_FACE.value:
